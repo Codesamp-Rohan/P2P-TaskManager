@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div id="titlebar">
+      <pear-ctrl></pear-ctrl>
+    </div>
+    <main>
+      <h1 class="name"></h1>
+      <div class="outerScreen"></div>
+      <div class="userList-PopUp"></div>
+      <div id="setup" class="">
+        <div class="name--popUp">
+          <label for="changeName">Enter your Name here.</label>
+          <div style="display: flex; gap: 5px">
+            <input
+              type="text"
+              id="name--input"
+              placeholder="Enter name here..." />
+            <button class="button namePopUpBtn">Submit</button>
+          </div>
+        </div>
+        <div>
+          <button id="create-chat-room">Create</button>
+        </div>
+        <div id="or">- or -</div>
+        <form id="join-form">
+          <button type="submit" id="join-chat-room">Join</button>
+          <input
+            required
+            id="join-chat-room-topic"
+            type="text"
+            placeholder="Chat room Topic" />
+        </form>
+      </div>
+      <div id="loading" class="hidden">Loading ...</div>
+      <div id="chat" class="hidden">
+        <div class="square"></div>
+        <div class="blob"></div>
+        <div class="peerList hidden">
+          <button class="peerListCancel">Cancel</button>
+          <div id="user-list"></div>
+        </div>
+        <div id="header">
+          <div id="details">
+            <div>Topic: <span id="chat-room-topic"></span></div>
+            <button class="peer--btn">
+              Peers: <span id="peers-count">1</span>
+            </button>
+          </div>
+        </div>
+        <div id="messages"></div>
+        <button class="todo--open--btn">
+          <img src="./assets/add.png" class="logo" />
+        </button>
+        <form id="message-form" class="hidden">
+          <span>
+            <label
+              for="title"
+              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+              >Title</label
+            >
+            <input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="Enter the title here..." />
+          </span>
+          <span>
+            <label
+              for="message"
+              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+              >Description</label
+            >
+            <input
+              id="message"
+              title="message"
+              type="text"
+              placeholder="Enter your description here..." />
+          </span>
+          <span>
+            <label
+              for="to"
+              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+              >To?</label
+            >
+            <input
+              id="to"
+              title="to"
+              type="text"
+              placeholder="To whom you wanna assign to?" />
+          </span>
+          <span class="category-container">
+            <div class="category-title">Select Categories:</div>
+            <label>
+              <input type="checkbox" name="categories" value="Website" />
+              <span class="custom-checkbox"></span>
+              Website
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="App" />
+              <span class="custom-checkbox"></span>
+              App
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Software" />
+              <span class="custom-checkbox"></span>
+              Software
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Design" />
+              <span class="custom-checkbox"></span>
+              Design
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Personal" />
+              <span class="custom-checkbox"></span>
+              Personal
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Others" />
+              <span class="custom-checkbox"></span>
+              Others
+            </label>
+          </span>
+
+          <div style="display: flex; gap: 10px">
+            <input
+              type="submit"
+              value="Send Now"
+              class="button send--btn"
+              style="width: 100%" />
+            <button type="button" class="close--btn">Close</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      // function submitMessage(event) {
+      //   event.preventDefault(); // Prevent the form from submitting normally
+
+      //   const form = event.target;
+      //   const title = form.title.value;
+      //   const message = form.message.value;
+
+      //   // Collect selected categories
+      //   const selectedCategories = Array.from(form.elements.categories)
+      //     .filter((checkbox) => checkbox.checked)
+      //     .map((checkbox) => checkbox.value);
+
+      //   // Display the selected categories in an alert (or handle them as needed)
+      //   alert(
+      //     `Title: ${title}\nMessage: ${message}\nSelected Categories: ${selectedCategories.join(
+      //       ", "
+      //     )}`
+      //   );
+
+      //   // Optionally, you can clear the form after submission
+      //   form.reset();
+      // }
+    </script>
+  </body>
+</html>
