@@ -14,11 +14,12 @@
       <div class="userList-PopUp"></div>
       <div id="setup" class="">
         <div class="name--popUp">
-          <label for="changeName">Enter your Name here.</label>
+          <!-- <label for="changeName">Enter your Name here.</label> -->
           <div style="display: flex; gap: 5px">
             <input
               type="text"
               id="name--input"
+              style="border: 0; width: 250px"
               placeholder="Enter name here..." />
             <button class="button namePopUpBtn">Submit</button>
           </div>
@@ -38,6 +39,7 @@
       </div>
       <div id="loading" class="hidden">Loading ...</div>
       <div id="chat" class="hidden">
+        <div class="notification inactive"></div>
         <div class="square"></div>
         <div class="blob"></div>
         <div class="peerList hidden">
@@ -91,7 +93,8 @@
               id="to"
               title="to"
               type="text"
-              placeholder="To whom you wanna assign to?" />
+              placeholder="Assign a task with @" />
+            <div id="dropdown" class="mention--dropdown"></div>
           </span>
           <span class="category-container">
             <div class="category-title">Select Categories:</div>
@@ -138,30 +141,5 @@
         </form>
       </div>
     </main>
-
-    <script>
-      // function submitMessage(event) {
-      //   event.preventDefault(); // Prevent the form from submitting normally
-
-      //   const form = event.target;
-      //   const title = form.title.value;
-      //   const message = form.message.value;
-
-      //   // Collect selected categories
-      //   const selectedCategories = Array.from(form.elements.categories)
-      //     .filter((checkbox) => checkbox.checked)
-      //     .map((checkbox) => checkbox.value);
-
-      //   // Display the selected categories in an alert (or handle them as needed)
-      //   alert(
-      //     `Title: ${title}\nMessage: ${message}\nSelected Categories: ${selectedCategories.join(
-      //       ", "
-      //     )}`
-      //   );
-
-      //   // Optionally, you can clear the form after submission
-      //   form.reset();
-      // }
-    </script>
   </body>
 </html>

@@ -12,7 +12,7 @@ teardown(() => swarm.destroy());
 updates(() => Pear.reload());
 
 let userList = [];
-let creator;
+let creatorName = "";
 let userName = ""; // Store the current user's name
 
 // Declaration of Classes and Id's
@@ -73,9 +73,22 @@ swarm.on("connection", (peer) => {
         userList.push(data.name);
         updateUserList();
       }
+    } else if (data.type === "creator") {
+      creatorName = data.name;
+      updateUserList();
     } else if (data.type === "message") {
-      // Display regular chat messages
-      onTodoAdd(data.from, data.to, data.title, data.message, data.categories);
+      if (data.to.includes(userName)) {
+        document.querySelector(".notification").classList.remove("inactive");
+        sendNotification(data.from, data.title);
+      }
+      onTodoAdd(
+        data.id,
+        data.from,
+        data.to,
+        data.title,
+        data.message,
+        data.categories
+      );
     }
   });
 
@@ -98,7 +111,21 @@ messageForm.addEventListener("submit", sendMessage);
 async function createChatRoom() {
   document.querySelector(".name").classList.add("hidden");
   const topicBuffer = crypto.randomBytes(32);
-  creator = true;
+  creatorName = userName;
+  updateUserList();
+
+  const creatorData = {
+    type: "creator",
+    name: creatorName,
+  };
+
+  const messageBuffer = Buffer.from(JSON.stringify(creatorData));
+
+  const peers = [...swarm.connections];
+  for (const peer of peers) peer.write(messageBuffer);
+
+  console.log(`The room is created by ${creatorName}`);
+
   joinSwarm(topicBuffer);
 }
 
@@ -144,6 +171,11 @@ function sendMessage(e) {
   const description = document.querySelector("#message").value;
   const to = document.querySelector("#to").value;
 
+  const taggedUsers = to.match(/@\w+/g) || [];
+  const parsedTaggedUsers = taggedUsers.map((tag) => tag.slice(1));
+
+  const messageId = generateUniqueId();
+
   // Corrected line: Define form as messageForm
   const form = document.querySelector("#message-form");
 
@@ -152,25 +184,25 @@ function sendMessage(e) {
     .map((checkbox) => checkbox.value);
 
   // Display the message locally
-  onTodoAdd("You", to, title, description, selectedCategories);
-
-  // Broadcast the message to all peers with the current user's name
   const messageData = {
     type: "message",
+    id: messageId,
     from: userName,
-    to: to,
+    to: parsedTaggedUsers,
     title: title,
     message: description,
     categories: selectedCategories,
   };
+  onTodoAdd(messageId, "You", to, title, description, selectedCategories);
   const messageBuffer = Buffer.from(JSON.stringify(messageData));
   const peers = [...swarm.connections];
   for (const peer of peers) peer.write(messageBuffer);
 }
 
-function onTodoAdd(from, to, title, message, selectedCategories) {
+function onTodoAdd(id, from, to, title, message, selectedCategories) {
   const todoItem = document.createElement("div");
   todoItem.classList.add("todo-item");
+  todoItem.setAttribute("id", id);
   todoItem.innerHTML = `
   <span class="todo-item__from">Assigned By: ${from}</span>
     <span class="todo-item__to">Assigned To: ${to}</span>
@@ -210,9 +242,18 @@ function onTodoAdd(from, to, title, message, selectedCategories) {
 function updateUserList() {
   const userListContainer = document.querySelector("#user-list");
   userListContainer.innerHTML = ""; // Clear the current list
+  console.log(`Creator is : ${creatorName}`);
+
   userList.forEach((user) => {
-    const $userDiv = document.createElement("div");
+    const $userDiv = document.createElement("p");
+    const $admin = document.createElement("span");
+    $admin.classList.add("tag");
     $userDiv.textContent = user;
+    if (user === creatorName) {
+      $admin.textContent = "Creator";
+      $userDiv.appendChild($admin);
+    }
+    $userDiv.classList.add("user-list-item");
     userListContainer.appendChild($userDiv);
   });
 }
@@ -232,3 +273,68 @@ peerListBtnCancel.addEventListener("click", (e) => {
   outerScreen.classList.add("hidden");
   peerListPopUp.classList.add("hidden");
 });
+
+const dropdown = document.getElementById("dropdown");
+
+// Show dropdown of matching members when "@" is typed
+function showDropdown(query) {
+  dropdown.innerHTML = ""; // Clear previous entries
+  const filteredUsers = userList.filter((user) =>
+    user.toLowerCase().startsWith(query)
+  );
+
+  // Populate dropdown with filtered users
+  filteredUsers.forEach((user) => {
+    const item = document.createElement("div");
+    item.textContent = user;
+    item.classList.add("dropdown-item");
+    item.onclick = () => selectMember(user); // Add click event to select member
+    dropdown.appendChild(item);
+  });
+
+  dropdown.classList.remove("hidden"); // Show dropdown
+}
+
+// Hide the dropdown
+function hideDropdown() {
+  dropdown.classList.add("hidden");
+}
+
+// Replace "@query" with selected username
+function selectMember(member) {
+  const inputField = document.querySelector("#to");
+  const inputText = inputField.value;
+  const atIndex = inputText.lastIndexOf("@");
+
+  // Replace "@query" with "@member"
+  inputField.value = inputText.slice(0, atIndex) + "@" + member + " ";
+  hideDropdown(); // Hide dropdown after selection
+}
+
+document.querySelector("#to").addEventListener("keyup", (event) => {
+  const inputText = event.target.value;
+  const atIndex = inputText.lastIndexOf("@");
+
+  if (atIndex !== -1) {
+    const query = inputText.slice(atIndex + 1).toLowerCase();
+    showDropdown(query);
+  } else {
+    hideDropdown();
+  }
+});
+
+function sendNotification(from, title) {
+  const notification = document.querySelector(".notification");
+
+  // Reset notification visibility each time
+  notification.classList.remove("inactive");
+  notification.textContent = `${from} assigned you a task: ${title}`;
+
+  setTimeout(() => {
+    notification.classList.add("inactive");
+  }, 5000);
+}
+
+function generateUniqueId() {
+  return `todo-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}

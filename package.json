@@ -6,9 +6,13 @@
     "type": "desktop",
     "gui": {
       "backgroundColor": "#1F2430",
-      "height": "680",
-      "width": "920"
-    }
+      "height": "780",
+      "width": "1120"
+    },
+    "entrypoints": [],
+    "links": [
+      "https://images.pexels.com/photos/842711/pexels-photo-842711.jpeg"
+    ]
   },
   "type": "module",
   "license": "Apache-2.0",
