@@ -14,7 +14,6 @@
       <div class="userList-PopUp"></div>
       <div id="setup" class="">
         <div class="name--popUp">
-          <!-- <label for="changeName">Enter your Name here.</label> -->
           <div style="display: flex; gap: 5px">
             <input
               type="text"
@@ -34,6 +33,7 @@
             required
             id="join-chat-room-topic"
             type="text"
+            style="border: 0; width: 100%"
             placeholder="Chat room Topic" />
         </form>
       </div>
@@ -59,7 +59,7 @@
           <img src="./assets/add.png" class="logo" />
         </button>
         <form id="message-form" class="hidden">
-          <span>
+          <span class="form--input--container">
             <label
               for="title"
               style="padding-inline: 10px; font-weight: 700; font-size: 12px"
@@ -71,7 +71,7 @@
               id="title"
               placeholder="Enter the title here..." />
           </span>
-          <span>
+          <span class="form--input--container">
             <label
               for="message"
               style="padding-inline: 10px; font-weight: 700; font-size: 12px"
@@ -83,7 +83,7 @@
               type="text"
               placeholder="Enter your description here..." />
           </span>
-          <span>
+          <span class="form--input--container">
             <label
               for="to"
               style="padding-inline: 10px; font-weight: 700; font-size: 12px"
@@ -134,6 +134,87 @@
             <input
               type="submit"
               value="Send Now"
+              class="button send--btn"
+              style="width: 100%" />
+            <button type="button" class="close--btn">Close</button>
+          </div>
+        </form>
+        <form id="edit-form" class="hidden">
+          <span class="form--input--container">
+            <label
+              for="title"
+              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+              >Title</label
+            >
+            <input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="Enter the title here..." />
+          </span>
+          <span class="form--input--container">
+            <label
+              for="message"
+              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+              >Description</label
+            >
+            <input
+              id="message"
+              title="message"
+              type="text"
+              placeholder="Enter your description here..." />
+          </span>
+          <span class="form--input--container">
+            <label
+              for="to"
+              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+              >To?</label
+            >
+            <input
+              id="to"
+              title="to"
+              type="text"
+              placeholder="Assign a task with @" />
+            <div id="dropdown" class="mention--dropdown"></div>
+          </span>
+          <span class="category-container">
+            <div class="category-title">Select Categories:</div>
+            <label>
+              <input type="checkbox" name="categories" value="Website" />
+              <span class="custom-checkbox"></span>
+              Website
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="App" />
+              <span class="custom-checkbox"></span>
+              App
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Software" />
+              <span class="custom-checkbox"></span>
+              Software
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Design" />
+              <span class="custom-checkbox"></span>
+              Design
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Personal" />
+              <span class="custom-checkbox"></span>
+              Personal
+            </label>
+            <label>
+              <input type="checkbox" name="categories" value="Others" />
+              <span class="custom-checkbox"></span>
+              Others
+            </label>
+          </span>
+
+          <div style="display: flex; gap: 10px">
+            <input
+              type="submit"
+              value="Edit Now"
               class="button send--btn"
               style="width: 100%" />
             <button type="button" class="close--btn">Close</button>
