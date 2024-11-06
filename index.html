@@ -49,9 +49,19 @@
         <div id="header">
           <div id="details">
             <div>Topic: <span id="chat-room-topic"></span></div>
-            <button class="peer--btn">
-              Peers: <span id="peers-count">1</span>
-            </button>
+            <div style="display: flex; align-items: center; gap: 14px">
+              <div class="filter-dropdown">
+                <label for="todo-filter"></label>
+                <select name="todo-filter" id="todo-filter">
+                  <option value="all">All</option>
+                  <option value="pinned">Pinned</option>
+                  <option value="Tagged">Tagged</option>
+                </select>
+              </div>
+              <button class="peer--btn">
+                Peers: <span id="peers-count">1</span>
+              </button>
+            </div>
           </div>
         </div>
         <div id="messages"></div>
@@ -59,77 +69,102 @@
           <img src="./assets/add.png" class="logo" />
         </button>
         <form id="message-form" class="hidden">
-          <span class="form--input--container">
-            <label
-              for="title"
-              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
-              >Title</label
-            >
-            <input
-              type="text"
-              name="title"
-              id="title"
-              placeholder="Enter the title here..." />
-          </span>
-          <span class="form--input--container">
-            <label
-              for="message"
-              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
-              >Description</label
-            >
-            <input
-              id="message"
-              title="message"
-              type="text"
-              placeholder="Enter your description here..." />
-          </span>
-          <span class="form--input--container">
-            <label
-              for="to"
-              style="padding-inline: 10px; font-weight: 700; font-size: 12px"
-              >To?</label
-            >
-            <input
-              id="to"
-              title="to"
-              type="text"
-              placeholder="Assign a task with @" />
-            <div id="dropdown" class="mention--dropdown"></div>
-          </span>
-          <span class="category-container">
-            <div class="category-title">Select Categories:</div>
-            <label>
-              <input type="checkbox" name="categories" value="Website" />
-              <span class="custom-checkbox"></span>
-              Website
-            </label>
-            <label>
-              <input type="checkbox" name="categories" value="App" />
-              <span class="custom-checkbox"></span>
-              App
-            </label>
-            <label>
-              <input type="checkbox" name="categories" value="Software" />
-              <span class="custom-checkbox"></span>
-              Software
-            </label>
-            <label>
-              <input type="checkbox" name="categories" value="Design" />
-              <span class="custom-checkbox"></span>
-              Design
-            </label>
-            <label>
-              <input type="checkbox" name="categories" value="Personal" />
-              <span class="custom-checkbox"></span>
-              Personal
-            </label>
-            <label>
-              <input type="checkbox" name="categories" value="Others" />
-              <span class="custom-checkbox"></span>
-              Others
-            </label>
-          </span>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              overflow-y: scroll;
+              padding-bottom: 40px;
+            ">
+            <span class="form--input--container">
+              <label
+                for="title"
+                style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+                >Title</label
+              >
+              <input
+                type="text"
+                name="title"
+                id="title"
+                placeholder="Enter the title here..." />
+            </span>
+            <span class="form--input--container">
+              <label
+                for="message"
+                style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+                >Description</label
+              >
+              <input
+                id="message"
+                title="message"
+                type="text"
+                placeholder="Enter your description here..." />
+            </span>
+            <span class="form--input--container">
+              <label
+                for="to"
+                style="padding-inline: 10px; font-weight: 700; font-size: 12px"
+                >To?</label
+              >
+              <input
+                id="to"
+                title="to"
+                type="text"
+                placeholder="Assign a task with @" />
+              <div id="dropdown" class="mention--dropdown"></div>
+            </span>
+            <span class="form--input--container">
+              <label
+                for="start-date"
+                style="padding-inline: 10px; font-weight: 700; font-size: 12px">
+                Start Date
+              </label>
+              <input type="date" id="start-date" name="start-date" />
+            </span>
+            <span class="form--input--container">
+              <label
+                for="end-date"
+                style="padding-inline: 10px; font-weight: 700; font-size: 12px">
+                End Date
+              </label>
+              <input type="date" id="end-date" name="end-date" />
+            </span>
 
+            <span class="category-container">
+              <div class="category-title">Select Categories:</div>
+              <label>
+                <input type="checkbox" name="categories" value="Website" />
+                <span class="custom-checkbox"></span>
+                Website
+              </label>
+              <label>
+                <input type="checkbox" name="categories" value="App" />
+                <span class="custom-checkbox"></span>
+                App
+              </label>
+              <label>
+                <input type="checkbox" name="categories" value="Software" />
+                <span class="custom-checkbox"></span>
+                Software
+              </label>
+              <label>
+                <input type="checkbox" name="categories" value="Design" />
+                <span class="custom-checkbox"></span>
+                Design
+              </label>
+              <label>
+                <input type="checkbox" name="categories" value="Personal" />
+                <span class="custom-checkbox"></span>
+                Personal
+              </label>
+              <label>
+                <input type="checkbox" name="categories" value="Others" />
+                <span class="custom-checkbox"></span>
+                Others
+              </label>
+            </span>
+          </div>
           <div style="display: flex; gap: 10px">
             <input
               type="submit"
@@ -220,6 +255,61 @@
             <button type="button" class="close--btn">Close</button>
           </div>
         </form>
+        <div class="extendTodo closeExtendTodo">
+          <div class="extendTodo--topDiv">
+            <div class="extendTodo--topDiv--left">
+              <button class="extendTodo--share">
+                <img class="logo" src="./assets/share.png" />
+              </button>
+              <button class="extendTodo--expand">
+                <img class="logo" src="./assets/expand.png" />
+              </button>
+            </div>
+            <button class="extendTodo--cancel">
+              <img class="logo" src="./assets/close.png" />
+            </button>
+          </div>
+          <div class="extendTodo--middleDiv">
+            <div class="extendTodo--cat">
+              <span>website</span>
+              <span>app</span>
+            </div>
+            <h1 class="extendTodo--title">
+              This is the title of the Todo you opened and the task is this that
+              those.
+            </h1>
+            <span class="extendTodo--time">
+              <img src="./assets/clock.png" class="logo" />
+              <p>Nov 10 - Nov 20</p>
+            </span>
+            <span>
+              <h3>Description</h3>
+              <p class="extendTodo--para">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                Ratione tempore reprehenderit blanditiis, magni ad atque
+                incidunt adipisci dolore hic voluptatibus veniam ipsum maiores
+                velit harum odio accusantium dicta aut debitis.
+              </p>
+            </span>
+          </div>
+          <div class="extendTodo--bottomDiv">
+            <h3>Comments</h3>
+            <div class="extendTodo--comment"></div>
+            <form class="extendTodo--commentInput">
+              <input
+                type="text"
+                placeholder="Write a comment"
+                class="extendTodo--commentInput--input"
+                style="
+                  width: 70%;
+                  border-bottom: 0.4px solid;
+                  border-radius: 0;
+                  background: #eee;
+                " />
+              <button class="extendTodo--commentInput--btn">Send</button>
+            </form>
+          </div>
+        </div>
       </div>
     </main>
   </body>

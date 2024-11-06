@@ -15,6 +15,9 @@ let userList = [];
 let creatorName = "";
 let userName = ""; // Store the current user's name
 
+// Object to store comments for each todoId
+const commentsData = {};
+
 // Declaration of Classes and Id's
 const outerScreen = document.querySelector(".outerScreen");
 const namePopUp = document.querySelector(".name--popUp");
@@ -57,6 +60,23 @@ function changeName() {
 
 namePopUpBtn.addEventListener("click", changeName);
 
+function getDaysLeft(endDate) {
+  const today = new Date();
+  const end = new Date(endDate);
+
+  const timeDiff = end - today;
+
+  const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+  if (daysLeft > 0) {
+    return `${daysLeft} days left`;
+  } else if (daysLeft === 0) {
+    return "Ends today";
+  } else {
+    return "Expired";
+  }
+}
+
 swarm.on("connection", (peer) => {
   // Send the local user's name to the new peer
   const nameData = {
@@ -96,6 +116,8 @@ swarm.on("connection", (peer) => {
         data.to,
         data.title,
         data.message,
+        data.startDate,
+        data.endDate,
         data.categories
       );
     } else if (data.type === "deleteTodo") {
@@ -137,6 +159,10 @@ swarm.on("connection", (peer) => {
           categoriesContainer.appendChild(categorySpan);
         });
       }
+    } else if (data.type === "pinTodo") {
+      pinTodoItem(data.id);
+    } else if (data.type === "comment") {
+      displayComment(data);
     }
   });
 
@@ -218,6 +244,8 @@ function sendMessage(e) {
   let title = document.querySelector("#title").value;
   let description = document.querySelector("#message").value;
   let to = document.querySelector("#to").value;
+  let startDate = document.querySelector("#start-date").value;
+  let endDate = document.querySelector("#end-date").value;
 
   if (title === "") {
     alertNotification("Please enter a title for your task.");
@@ -244,28 +272,53 @@ function sendMessage(e) {
       to: parsedTaggedUsers,
       title: title,
       message: description,
+      startDate: startDate,
+      endDate: endDate,
       categories: selectedCategories,
     };
-    onTodoAdd(messageId, "You", to, title, description, selectedCategories);
+    onTodoAdd(
+      messageId,
+      "You",
+      to,
+      title,
+      description,
+      startDate,
+      endDate,
+      selectedCategories
+    );
     const messageBuffer = Buffer.from(JSON.stringify(messageData));
     const peers = [...swarm.connections];
     for (const peer of peers) peer.write(messageBuffer);
   }
 }
 
-function onTodoAdd(id, from, to, title, message, selectedCategories) {
+function onTodoAdd(
+  id,
+  from,
+  to,
+  title,
+  message,
+  startDate,
+  endDate,
+  selectedCategories
+) {
   const todoItem = document.createElement("div");
   todoItem.classList.add("todo-item");
   todoItem.setAttribute("id", id);
   todoItem.style.position = "relative"; // Ensure the todo-item is the relative parent
+  const creationTime = new Date();
+  console.log(creationTime);
+
+  const timeLeft = getDaysLeft(endDate);
 
   todoItem.innerHTML = `
-    <span class="todo-item__title">${title}</span>
-    <span class="todo-item__message">${message}</span>
+  <span class="todo-item__title" style="margin-bottom: 10px;">${title}</span>
+  <span class="todo-item__message">${message}</span>
     <div class="todo-item-fromto-div">
       <span class="todo-item__from">By: ${from}</span>
       <span class="todo-item__to">To: ${to}</span>
     </div>
+    <div class="todo-item__days-left"><img src="./assets/clock.png" class="logo"/>${timeLeft}</div>
   `;
 
   // Categories container
@@ -347,6 +400,19 @@ function onTodoAdd(id, from, to, title, message, selectedCategories) {
   pinBtn.classList.add("menuBtn");
   pinBtn.textContent = "Pin";
   pinBtn.appendChild(pinBtnImg);
+  pinBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    pinTodoItem(id);
+    const pinData = {
+      type: "pinTodo",
+      id: id,
+    };
+
+    const messageBuffer = Buffer.from(JSON.stringify(pinData));
+
+    const peers = [...swarm.connections];
+    for (const peer of peers) peer.write(messageBuffer);
+  });
 
   todoMenu.appendChild(deleteBtn);
   todoMenu.appendChild(editBtn);
@@ -406,6 +472,20 @@ function openEditForm(todoId, title, message, to, categories) {
   outerScreen.classList.remove("hidden");
 
   editForm.setAttribute("data-todo-id", todoId);
+}
+
+function pinTodoItem(id) {
+  const todoItem = document.getElementById(id);
+  const pinMsg = todoItem.querySelector(".pin");
+
+  if (pinMsg) {
+    todoItem.removeChild(pinMsg);
+  } else {
+    const newPinMsg = document.createElement("span");
+    newPinMsg.classList.add("pin");
+    newPinMsg.textContent = "📌";
+    todoItem.appendChild(newPinMsg);
+  }
 }
 
 document.querySelector("#edit-form").addEventListener("submit", (e) => {
@@ -591,4 +671,155 @@ function alertNotification(msg) {
 
 function generateUniqueId() {
   return `todo-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}
+
+const filterDropdown = document.getElementById("todo-filter");
+filterDropdown.addEventListener("change", (event) => {
+  filterTodos(event.target.value);
+});
+
+// Filter Todos
+function filterTodos(filter) {
+  const todos = document.querySelectorAll(".todo-item");
+
+  todos.forEach((todo) => {
+    const isPinned = todo.querySelector(".pin") !== null;
+    const taggedUsers = todo
+      .querySelector(".todo-item__to")
+      .textContent.includes("@");
+
+    if (filter === "all") {
+      todo.style.display = "block";
+    } else if (filter === "pinned" && isPinned) {
+      todo.style.display = "block";
+    } else if (filter === "tagged" && taggedUsers) {
+      todo.style.display = "block";
+    } else {
+      todo.style.display = "none";
+    }
+  });
+}
+
+const extendTodo = document.querySelector(".extendTodo");
+const extendTodoClose = document.querySelector(".extendTodo--cancel");
+
+extendTodoClose.addEventListener("click", (e) => {
+  e.preventDefault();
+  outerScreen.classList.add("hidden");
+  extendTodo.classList.add("closeExtendTodo");
+});
+
+function showTodoDetails(id, title, message, from, to, categories) {
+  const extendTodo = document.querySelector(".extendTodo");
+  extendTodo.setAttribute("id", id);
+
+  const todoCommentsDiv = document.querySelector(".extendTodo--comment");
+  todoCommentsDiv.innerHTML = "";
+
+  // Load and display comments for the current todo
+  if (commentsData[id]) {
+    commentsData[id].forEach(displayComment);
+  }
+
+  // Select elements inside extendTodo to populate them with the todo details
+  const extendTodoTitle = document.querySelector(".extendTodo--title");
+  const extendTodoPara = document.querySelector(".extendTodo--para");
+  const extendTodoCategories = document.querySelector(".extendTodo--cat");
+
+  // Populate title and message
+  extendTodoTitle.textContent = title;
+  extendTodoPara.textContent = message;
+
+  // Clear existing categories and add new ones
+  extendTodoCategories.innerHTML = ""; // Clear previous categories
+  categories.forEach((category) => {
+    const categorySpan = document.createElement("span");
+    categorySpan.textContent = category;
+    extendTodoCategories.appendChild(categorySpan);
+  });
+
+  // Optionally, populate additional information like the 'from' and 'to' details
+  // For example, if you have a dedicated section for 'from' and 'to' in extendTodo
+  const extendTodoFrom = document.querySelector(".extendTodo--from");
+  const extendTodoTo = document.querySelector(".extendTodo--to");
+
+  if (extendTodoFrom) extendTodoFrom.textContent = `From: ${from}`;
+  if (extendTodoTo) extendTodoTo.textContent = `To: ${to}`;
+}
+
+// Event delegation: listen for clicks on `.todo-item` within `#messages`
+document.querySelector("#messages").addEventListener("click", (e) => {
+  const todo = e.target.closest(".todo-item");
+  if (
+    todo &&
+    !e.target.closest(".menuBtn") &&
+    !e.target.closest(".todo-item__menu_btn")
+  ) {
+    e.preventDefault();
+    outerScreen.classList.remove("hidden");
+
+    const todoId = todo.id;
+
+    // Retrieve the details of the todo item
+    const title = todo.querySelector(".todo-item__title").textContent;
+    const message = todo.querySelector(".todo-item__message").textContent;
+    const from = todo.querySelector(".todo-item__from").textContent;
+    const to = todo.querySelector(".todo-item__to").textContent;
+
+    // Collect categories if they exist
+    const categoryElements = todo.querySelectorAll(".todo-item__category");
+    const categories = Array.from(categoryElements).map(
+      (cat) => cat.textContent
+    );
+
+    // Show the todo details in the extendTodo section
+    showTodoDetails(todoId, title, message, from, to, categories);
+
+    // Show the extendTodo section
+    const extendTodo = document.querySelector(".extendTodo");
+    extendTodo.classList.remove("closeExtendTodo");
+  }
+});
+
+document
+  .querySelector(".extendTodo--commentInput")
+  .addEventListener("submit", (e) => {
+    e.preventDefault();
+    sendComment();
+  });
+
+function sendComment() {
+  const comment = document
+    .querySelector(".extendTodo--commentInput--input")
+    .value.trim();
+  const todoId = document.querySelector(".extendTodo").getAttribute("id");
+
+  if (!comment) return;
+
+  const commentData = {
+    type: "comment",
+    todoId,
+    comment: comment,
+    author: userName,
+  };
+
+  if (!commentsData[todoId]) {
+    commentsData[todoId] = [];
+  }
+  commentsData[todoId].push(commentData);
+
+  displayComment(commentData);
+
+  const messageBuffer = Buffer.from(JSON.stringify(commentData));
+  swarm.connections.forEach((peer) => peer.write(messageBuffer));
+}
+
+function displayComment({ todoId, comment, author }) {
+  const extendTodo = document.querySelector(".extendTodo");
+  if (extendTodo.getAttribute("id") === todoId) {
+    const todoCommentsDiv = document.querySelector(".extendTodo--comment");
+    const commentEl = document.createElement("p");
+    commentEl.innerHTML = `<strong>${author}:</strong> ${comment}`;
+    todoCommentsDiv.appendChild(commentEl);
+  }
 }

@@ -32,7 +32,12 @@ body {
   margin: 0;
   padding: 0;
 }
-
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
 main {
   display: flex;
   height: 100vh;
@@ -47,7 +52,6 @@ alert {
   bottom: 10px;
   right: 10px;
   border-top: 2px solid red;
-  /* background-color: rgba(255, 0, 0, 0.146); */
   background-color: #eee;
   color: rgb(104, 0, 0);
   z-index: 999;
@@ -79,6 +83,13 @@ input {
 
 .hidden {
   display: none !important;
+}
+
+.pin {
+  width: fit-content;
+  position: absolute;
+  right: -14px;
+  top: -1px;
 }
 
 #or {
@@ -140,6 +151,7 @@ input {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 60%;
+  height: 80%;
   background-color: #eee;
   padding: 14px;
   border-radius: 20px;
@@ -269,6 +281,7 @@ input {
   display: flex;
   flex-direction: column;
   position: relative;
+  cursor: pointer;
 }
 .menuBtn {
   border-radius: 7px;
@@ -354,12 +367,13 @@ input {
   font-size: 14px;
   color: #666;
   margin-block: 10px;
-  display: -webkit-box; /* Use flexbox for multiline truncation */
-  -webkit-line-clamp: 3; /* Limit to 3 lines */
-  -webkit-box-orient: vertical; /* Set the box orientation to vertical */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* Show ellipsis on overflow */
-  white-space: normal; /* Allow wrapping within lines */
+  /* display: -webkit-box;*/
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  display: none;
 }
 .todo--open--btn {
   width: fit-content;
@@ -438,6 +452,18 @@ input[type="checkbox"]:checked + .custom-checkbox {
   font-weight: bolder;
   color: #444;
 }
+.todo-item__days-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+.todo-item__days-left img {
+  width: 12px;
+  height: 12px;
+  opacity: 0.5;
+}
 
 .square {
   position: absolute;
@@ -510,4 +536,136 @@ input[type="checkbox"]:checked + .custom-checkbox {
   border-radius: 30px;
   background: #8a6eff;
   margin-left: 10px;
+}
+
+/* EXTEND TODO */
+
+.extendTodo {
+  position: fixed;
+  z-index: 500;
+  width: 50vw;
+  height: 96vh;
+  right: 0;
+  bottom: 0;
+  background: #f2f2f2;
+  box-shadow: 0 10px 30px #bbb;
+}
+.extendTodo--topDiv {
+  padding: 14px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #bbb;
+}
+.extendTodo--topDiv--left {
+  display: flex;
+  align-items: center;
+}
+.extendTodo--topDiv button {
+  background-color: transparent;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.extendTodo--middleDiv {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-inline: 40px;
+  height: 60%;
+}
+.extendTodo--cat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 2rem;
+}
+.extendTodo--cat span {
+  padding: 4px 10px;
+  border-radius: 30px;
+  background-color: greenyellow;
+}
+.extendTodo--title {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.6rem;
+  color: #333;
+  margin-block: 10px;
+}
+.extendTodo--time {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  border: 0.5px solid;
+  gap: 5px;
+  width: fit-content;
+  border-radius: 30px;
+  font-size: 12px;
+  border: 0;
+  background: linear-gradient(135deg, #ecdae0, #e5ddf7);
+}
+.extendTodo--time p {
+  margin: 0;
+}
+.extendTodo--para {
+  font-size: 14px;
+  color: #555;
+  text-align: justify;
+}
+.extendTodo--bottomDiv {
+  padding-inline: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 28%;
+}
+.extendTodo--comment {
+  overflow-y: scroll;
+  margin-block: 10px;
+}
+.closeExtendTodo {
+  transform: translateX(150%);
+}
+#todo-filter {
+  padding: 9px 20px;
+  border-radius: 38px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #222;
+  border: 0;
+  color: #eee;
+}
+#todo-filter:focus,
+#todo-filter:active {
+  outline: none; /* Removes outline for accessibility */
+  border: none; /* Removes the border */
+}
+select {
+  appearance: none;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 10px;
+  padding-right: 30px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  position: relative;
+  text-align: center;
+}
+
+select::after {
+  content: "▼";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #f0f0f0;
+}
+
+option {
+  color: #333;
+  background-color: #f0f0f0;
+  padding: 10px;
 }
