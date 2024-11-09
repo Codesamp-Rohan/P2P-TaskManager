@@ -812,6 +812,7 @@ function sendComment() {
 
   const messageBuffer = Buffer.from(JSON.stringify(commentData));
   swarm.connections.forEach((peer) => peer.write(messageBuffer));
+  document.querySelector(".extendTodo--commentInput--input").value = "";
 }
 
 function displayComment({ todoId, comment, author }) {
